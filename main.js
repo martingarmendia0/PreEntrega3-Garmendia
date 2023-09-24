@@ -1,5 +1,6 @@
 let carrito = [];
 let total = 0;
+let edadUsuario = null;
 
 let bebidas = [
     { nombre: "Cerveza", precio: 5.99 },
@@ -15,29 +16,34 @@ if (localStorage.getItem("cart")) {
 }
 
 document.getElementById("verificarEdadBtn").addEventListener("click", function () {
-    let edadInput = document.createElement("input");
-    edadInput.setAttribute("type", "number");
-    edadInput.setAttribute("placeholder", "Ingresa tu edad");
-    let confirmarBtn = document.createElement("button");
-    confirmarBtn.innerText = "Confirmar";
-    confirmarBtn.addEventListener("click", function () {
-        let edad = parseInt(edadInput.value);
+    if (edadUsuario === null) {
+        let edadInput = document.createElement("input");
+        edadInput.setAttribute("type", "number");
+        edadInput.setAttribute("placeholder", "Ingresa tu edad");
+        let confirmarBtn = document.createElement("button");
+        confirmarBtn.innerText = "Confirmar";
+        confirmarBtn.addEventListener("click", function () {
+            let edad = parseInt(edadInput.value);
 
-        if (isNaN(edad)) {
-            mostrarMensaje("Por favor, ingresa un valor numérico válido.");
-            return;
-        }
+            if (isNaN(edad)) {
+                mostrarMensaje("Por favor, ingresa un valor numérico válido.");
+                return;
+            }
 
-        if (edad >= 18) {
-            mostrarOpciones();
-        } else {
-            mostrarMensaje("Lo siento, debes ser mayor de 18 años para acceder a esta tienda.");
-        }
-    });
+            if (edad >= 18) {
+                edadUsuario = edad;
+                mostrarOpciones();
+            } else {
+                mostrarMensaje("Lo siento, debes ser mayor de 18 años para acceder a esta tienda.");
+            }
+        });
 
-    document.getElementById("output").innerHTML = "";
-    document.getElementById("output").appendChild(edadInput);
-    document.getElementById("output").appendChild(confirmarBtn);
+        document.getElementById("output").innerHTML = "";
+        document.getElementById("output").appendChild(edadInput);
+        document.getElementById("output").appendChild(confirmarBtn);
+    } else {
+        mostrarOpciones();
+    }
 });
 
 function mostrarMensaje(mensaje) {
@@ -83,9 +89,9 @@ function mostrarOpciones() {
 }
 
 function mostrarBebidas() {
-    let listaBebidas = "Lista de bebidas disponibles:\n";
+    let listaBebidas = "Lista de bebidas disponibles:<br>";
     for (let i = 0; i < bebidas.length; i++) {
-        listaBebidas += `${i + 1}. ${bebidas[i].nombre} - $${bebidas[i].precio.toFixed(2)}\n`;
+        listaBebidas += `${i + 1}. ${bebidas[i].nombre} - $${bebidas[i].precio.toFixed(2)}.<br>`;
     }
     mostrarMensaje(listaBebidas);
 }
@@ -133,9 +139,9 @@ function filtrarBebidas() {
         }
 
         let bebidasFiltradas = bebidas.filter(bebida => bebida.precio <= precioMaximo);
-        let listaFiltrada = "Bebidas filtradas por precio:\n";
+        let listaFiltrada = "Bebidas filtradas por precio:<br>";
         bebidasFiltradas.forEach(bebida => {
-            listaFiltrada += `${bebida.nombre} - $${bebida.precio.toFixed(2)}\n`;
+            listaFiltrada += `${bebida.nombre} - $${bebida.precio.toFixed(2)}.<br>`;
         });
         mostrarMensaje(listaFiltrada);
     });
@@ -146,43 +152,31 @@ function filtrarBebidas() {
 }
 
 function comenzarCompras() {
-    let opcionesDiv = document.createElement("div");
-    opcionesDiv.innerHTML = `
-        <select id="bebidaSeleccionada">
-            ${bebidas.map((bebida, index) => `<option value="${index}">${bebida.nombre} - $${bebida.precio.toFixed(2)}</option>`).join('')}
-        </select>
-        <button id="agregarAlCarritoBtn">Agregar al Carrito</button>
-        <button id="terminarComprasBtn">Terminar Compras</button>
-    `;
+    if (edadUsuario === null) {
+        mostrarMensaje("Por favor, verifica tu edad antes de comenzar las compras.");
+    } else {
+        let opcionesDiv = document.createElement("div");
+        opcionesDiv.innerHTML = `
+            <select id="bebidaSeleccionada">
+                ${bebidas.map((bebida, index) => `<option value="${index}">${bebida.nombre} - $${bebida.precio.toFixed(2)}</option>`).join('')}
+            </select>
+            <button id="agregarAlCarritoBtn">Agregar al Carrito</button>
+        `;
 
-    document.getElementById("output").innerHTML = "";
-    document.getElementById("output").appendChild(opcionesDiv);
+        document.getElementById("output").innerHTML = "";
+        document.getElementById("output").appendChild(opcionesDiv);
 
-    // Event listener to add selected item to cart
-    document.getElementById("agregarAlCarritoBtn").addEventListener("click", function () {
-        let opcion = document.getElementById("bebidaSeleccionada").value;
-        let seleccion = bebidas[opcion];
-        carrito.push(seleccion);
-        total += seleccion.precio;
-        guardarCarritoEnStorage();
-        actualizarCarrito();
-        mostrarMensaje(`${seleccion.nombre} ha sido añadido al carrito.`);
-    });
-
-    // Event listener to finish shopping
-    document.getElementById("terminarComprasBtn").addEventListener("click", function () {
-        mostrarCarrito();
-    });
-}
-
-function mostrarCarrito() {
-    let listaCarrito = "Productos en tu carrito:\n";
-    for (let i = 0; i < carrito.length; i++) {
-        listaCarrito += `${i + 1}. ${carrito[i].nombre} - $${carrito[i].precio.toFixed(2)}\n`;
+        // Event listener to add selected item to cart
+        document.getElementById("agregarAlCarritoBtn").addEventListener("click", function () {
+            let opcion = document.getElementById("bebidaSeleccionada").value;
+            let seleccion = bebidas[opcion];
+            carrito.push(seleccion);
+            total += seleccion.precio;
+            guardarCarritoEnStorage();
+            actualizarCarrito();
+            mostrarMensaje(`${seleccion.nombre} ha sido añadido al carrito.`);
+        });
     }
-
-    listaCarrito += `\nTotal a pagar: $${total.toFixed(2)}`;
-    mostrarMensaje(listaCarrito);
 }
 
 function actualizarCarrito() {
@@ -194,6 +188,14 @@ function actualizarCarrito() {
     document.getElementById("cart-total").textContent = total.toFixed(2);
     document.getElementById("carrito").style.display = "block";
 }
+
+document.getElementById("reestablecerBtn").addEventListener("click", function () {
+    carrito = [];
+    total = 0;
+    guardarCarritoEnStorage();
+    actualizarCarrito();
+    mostrarMensaje("El carrito de compras ha sido reestablecido.");
+});
 
 // Function to save cart data to localStorage
 function guardarCarritoEnStorage() {
