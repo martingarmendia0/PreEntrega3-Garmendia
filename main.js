@@ -32,6 +32,7 @@ document.getElementById("verificarEdadBtn").addEventListener("click", function (
 
             if (edad >= 18) {
                 edadUsuario = edad;
+                ocultarVerificacionEdad();
                 mostrarOpciones();
             } else {
                 mostrarMensaje("Lo siento, debes ser mayor de 18 años para acceder a esta tienda.");
@@ -45,6 +46,11 @@ document.getElementById("verificarEdadBtn").addEventListener("click", function (
         mostrarOpciones();
     }
 });
+
+function ocultarVerificacionEdad() {
+    document.getElementById("verificarEdadBtn").style.display = "none";
+    document.getElementById("edadText").style.display = "none";
+}
 
 function mostrarMensaje(mensaje) {
     let mensajeDiv = document.createElement("div");
@@ -94,6 +100,7 @@ function mostrarBebidas() {
         listaBebidas += `${i + 1}. ${bebidas[i].nombre} - $${bebidas[i].precio.toFixed(2)}.<br>`;
     }
     mostrarMensaje(listaBebidas);
+    mostrarBotonAtras();
 }
 
 function buscarBebida() {
@@ -117,6 +124,7 @@ function buscarBebida() {
         } else {
             mostrarMensaje("No se encontró la bebida.");
         }
+        mostrarBotonAtras();
     });
 
     document.getElementById("output").innerHTML = "";
@@ -144,6 +152,7 @@ function filtrarBebidas() {
             listaFiltrada += `${bebida.nombre} - $${bebida.precio.toFixed(2)}.<br>`;
         });
         mostrarMensaje(listaFiltrada);
+        mostrarBotonAtras();
     });
 
     document.getElementById("output").innerHTML = "";
@@ -154,6 +163,7 @@ function filtrarBebidas() {
 function comenzarCompras() {
     if (edadUsuario === null) {
         mostrarMensaje("Por favor, verifica tu edad antes de comenzar las compras.");
+        mostrarBotonAtras();
     } else {
         let opcionesDiv = document.createElement("div");
         opcionesDiv.innerHTML = `
@@ -175,6 +185,7 @@ function comenzarCompras() {
             guardarCarritoEnStorage();
             actualizarCarrito();
             mostrarMensaje(`${seleccion.nombre} ha sido añadido al carrito.`);
+            mostrarBotonAtras();
         });
     }
 }
@@ -195,6 +206,7 @@ document.getElementById("reestablecerBtn").addEventListener("click", function ()
     guardarCarritoEnStorage();
     actualizarCarrito();
     mostrarMensaje("El carrito de compras ha sido reestablecido.");
+    mostrarBotonAtras();
 });
 
 // Function to save cart data to localStorage
@@ -205,3 +217,14 @@ function guardarCarritoEnStorage() {
 
 // Initialize the cart display
 actualizarCarrito();
+
+// Function to show the back button
+function mostrarBotonAtras() {
+    let atrasBtn = document.createElement("button");
+    atrasBtn.innerText = "Atrás";
+    atrasBtn.addEventListener("click", function () {
+        mostrarOpciones();
+    });
+
+    document.getElementById("output").appendChild(atrasBtn);
+}
