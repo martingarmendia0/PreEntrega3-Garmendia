@@ -2,50 +2,57 @@ let carrito = [];
 let total = 0;
 let edadUsuario = null;
 
-let bebidas = [
-    { nombre: "Cerveza", precio: 5.99 },
-    { nombre: "Vino", precio: 12.99 },
-    { nombre: "Whisky", precio: 29.99 }
-];
+let bebidas = [];
 
-// Load cart data from localStorage if available
-if (localStorage.getItem("cart")) {
-    carrito = JSON.parse(localStorage.getItem("cart"));
-    total = parseFloat(localStorage.getItem("total"));
-    actualizarCarrito();
-}
-
-document.getElementById("verificarEdadBtn").addEventListener("click", function () {
-    if (edadUsuario === null) {
-        let edadInput = document.createElement("input");
-        edadInput.setAttribute("type", "number");
-        edadInput.setAttribute("placeholder", "Ingresa tu edad");
-        let confirmarBtn = document.createElement("button");
-        confirmarBtn.innerText = "Confirmar";
-        confirmarBtn.addEventListener("click", function () {
-            let edad = parseInt(edadInput.value);
-
-            if (isNaN(edad)) {
-                mostrarMensaje("Por favor, ingresa un valor numérico válido.");
-                return;
-            }
-
-            if (edad >= 18) {
-                edadUsuario = edad;
-                ocultarVerificacionEdad();
-                mostrarOpciones();
-            } else {
-                mostrarMensaje("Lo siento, debes ser mayor de 18 años para acceder a esta tienda.");
-            }
-        });
-
-        document.getElementById("output").innerHTML = "";
-        document.getElementById("output").appendChild(edadInput);
-        document.getElementById("output").appendChild(confirmarBtn);
-    } else {
-        mostrarOpciones();
+// Cargar datos de forma asincrónica usando fetch
+async function cargarDatos() {
+    try {
+        const response = await fetch('./datos.json');
+        const data = await response.json();
+        bebidas = data.bebidas;
+    } catch (error) {
+        console.error('Error al cargar datos:', error.message);
+        mostrarMensaje('Error al cargar los datos. Por favor, inténtalo de nuevo más tarde.');
     }
-});
+
+    // Load age data from localStorage if available
+    if (localStorage.getItem("edad")) {
+        edadUsuario = parseInt(localStorage.getItem("edad"));
+        ocultarVerificacionEdad();
+    } else {
+        // Show age verification modal
+        $('#verificarEdadModal').modal('show');
+    }
+
+    // Confirm age from the modal
+    document.getElementById("confirmarEdadBtn").addEventListener("click", function () {
+        let edad = parseInt(document.getElementById("edadInput").value);
+        if (isNaN(edad)) {
+            mostrarMensaje("Por favor, ingresa un valor numérico válido.");
+            return;
+        }
+        if (edad >= 18) {
+            edadUsuario = edad;
+            ocultarVerificacionEdad();
+            mostrarOpciones();
+            $('#verificarEdadModal').modal('hide');
+            // Save age to localStorage
+            localStorage.setItem("edad", edad.toString());
+        } else {
+            mostrarMensaje("Lo siento, debes ser mayor de 18 años para acceder a esta tienda.");
+        }
+    });
+
+    // Load cart data from localStorage if available
+    if (localStorage.getItem("cart")) {
+        carrito = JSON.parse(localStorage.getItem("cart"));
+        total = parseFloat(localStorage.getItem("total"));
+        actualizarCarrito();
+    }
+
+    // Show options after loading data and verifying age
+    mostrarOpciones();
+}
 
 function ocultarVerificacionEdad() {
     document.getElementById("verificarEdadBtn").style.display = "none";
@@ -57,6 +64,15 @@ function mostrarMensaje(mensaje) {
     mensajeDiv.innerHTML = mensaje;
     document.getElementById("output").innerHTML = "";
     document.getElementById("output").appendChild(mensajeDiv);
+}
+
+function mostrarBebidas() {
+    let listaBebidas = "Lista de bebidas disponibles:<br>";
+    for (let i = 0; i < bebidas.length; i++) {
+        listaBebidas += `${i + 1}. ${bebidas[i].nombre} - $${bebidas[i].precio.toFixed(2)}.<br>`;
+    }
+    mostrarMensaje(listaBebidas);
+    mostrarBotonAtras();
 }
 
 function mostrarOpciones() {
@@ -92,15 +108,6 @@ function mostrarOpciones() {
     document.getElementById("salirBtn").addEventListener("click", function () {
         mostrarMensaje("Gracias por visitar la Tienda de Bebidas.");
     });
-}
-
-function mostrarBebidas() {
-    let listaBebidas = "Lista de bebidas disponibles:<br>";
-    for (let i = 0; i < bebidas.length; i++) {
-        listaBebidas += `${i + 1}. ${bebidas[i].nombre} - $${bebidas[i].precio.toFixed(2)}.<br>`;
-    }
-    mostrarMensaje(listaBebidas);
-    mostrarBotonAtras();
 }
 
 function buscarBebida() {
@@ -228,3 +235,6 @@ function mostrarBotonAtras() {
 
     document.getElementById("output").appendChild(atrasBtn);
 }
+
+// Cargar datos al inicio
+cargarDatos();

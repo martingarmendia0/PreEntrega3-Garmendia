@@ -1,0 +1,9 @@
+{
+    "bebidas": [
+      { "nombre": "Cerveza", "precio": 5.99 },
+      { "nombre": "Vino", "precio": 12.99 },
+      { "nombre": "Whisky", "precio": 29.99 },
+      { "nombre": "Refresco", "precio": 1.99 },
+      { "nombre": "Agua", "precio": 0.99 }
+    ]
+  }  
