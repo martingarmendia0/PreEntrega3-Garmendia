@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulador de Compra de Bebidas</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
+
 <body>
   <h1>Bienvenido a la Tienda de Bebidas</h1>
   <p id="edadText">¿Eres mayor de 18 años?</p>
@@ -20,7 +23,8 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="verificarEdadModal" tabindex="-1" role="dialog" aria-labelledby="verificarEdadModalLabel" aria-hidden="true">
+  <div class="modal fade" id="verificarEdadModal" tabindex="-1" role="dialog" aria-labelledby="verificarEdadModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -39,10 +43,13 @@
       </div>
     </div>
   </div>
-
+  <div id="mensajeFinalizarCompra"></div>
+  <button id="finalizarCompraBtn">Finalizar Compra</button>
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script src="./main.js"></script>
 </body>
+
 </html>

@@ -4,7 +4,7 @@ let edadUsuario = null;
 
 let bebidas = [];
 
-// Cargar datos de forma asincrónica usando fetch
+//Load data asynchronously using fetch
 async function cargarDatos() {
     try {
         const response = await fetch('./datos.json');
@@ -236,5 +236,25 @@ function mostrarBotonAtras() {
     document.getElementById("output").appendChild(atrasBtn);
 }
 
-// Cargar datos al inicio
+document.getElementById("finalizarCompraBtn").addEventListener("click", function () {
+    finalizarCompra();
+});
+
+function finalizarCompra() {
+   // Checkout logic, e.g. clear cart and display message
+    carrito = [];
+    total = 0;
+    guardarCarritoEnStorage();
+    actualizarCarrito();
+
+    // Show message with Toastify
+    Toastify({
+        text: "¡Compra finalizada con éxito!",
+        duration: 3000, // Message duration in milliseconds
+        gravity: "top", // Message position (top, bottom, left, right)
+        position: "center", // Message alignment (center, left, right)
+        backgroundColor: "green", // Message background color
+    }).showToast();
+}
+//Load data at startup
 cargarDatos();
